@@ -1,10 +1,9 @@
 import React from 'react';
 
 export default function LoginComponent() {
-    return 
-        <div>
+    return <div>
             <h1>
-            LoginComponent
+                LoginComponent
             </h1>
         </div>
     ;
