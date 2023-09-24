@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RegisterAPI } from "../api/AuthAPI";
 import { postUserData } from "../api/FirestoreAPI";
-import LinkedinLogo from "../assets/linkedinLogo.png";
+import MGMConnectLogo from "../assets/MGMConnectLogo.png";
 import { useNavigate } from "react-router-dom";
 import { getUniqueID } from "../helpers/getUniqueId";
 import "../Sass/LoginComponent.scss";
@@ -31,7 +31,7 @@ export default function RegisterComponent() {
 
   return (
     <div className="login-wrapper">
-      <img src={LinkedinLogo} className="linkedinLogo" />
+      <img src={MGMConnectLogo} className="MGMConnectLogo" />
 
       <div className="login-wrapper-inner">
         <h1 className="heading">Make the most of your professional life</h1>
