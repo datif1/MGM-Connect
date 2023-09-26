@@ -1,6 +1,6 @@
-$linkedinBlue1: #0072b1;
-$linkedinBlue2: #0073b1;
-$linkedinBlue3: #004c75;
+$mgmkhaki1: #D3BAA1;
+$mgmkhaki2: #C29C7D;
+$mgmkhaki3: #A18965;
 
 body {
   margin: 0;
@@ -32,7 +32,7 @@ body {
   width: 300px;
   height: 50px;
   cursor: pointer;
-  background-color: $linkedinBlue2;
+  background-color: $mgmkhaki2;
   border-radius: 30px;
   outline: none;
   border: none;
@@ -44,7 +44,7 @@ body {
 }
 
 .login-btn:hover {
-  background-color: $linkedinBlue3;
+  background-color: $mgmkhaki3;
 }
 
 .auth-inputs {
@@ -107,7 +107,7 @@ body {
   }
 
   .join-now {
-    color: $linkedinBlue1;
+    color: $mgmkhaki1;
     font-family: system-ui;
     cursor: pointer;
     font-size: 18px;
