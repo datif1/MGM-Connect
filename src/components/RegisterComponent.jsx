@@ -8,28 +8,24 @@ import "../Sass/LoginComponent.scss";
 import { toast } from "react-toastify";
 
 export default function RegisterComponent() {
-  const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ name: "", email: "", password: "" });
-
+  let navigate = useNavigate();
+  const [credentails, setCredentials] = useState({});
   const register = async () => {
     try {
-      if (credentials.email.endsWith("mgmtech.org")) {
-        let res = await RegisterAPI(credentials.email, credentials.password);
-        toast.success("Account Created!");
-        postUserData({
-          userID: getUniqueID(),
-          name: credentials.name,
-          email: credentials.email,
-          imageLink: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80",
-        });
-        navigate("/home");
-        localStorage.setItem("userEmail", res.user.email);
-      } else {
-        toast.error("Please use an email ending with 'mgmtech.org'");
-      }
+      let res = await RegisterAPI(credentails.email, credentails.password);
+      toast.success("Account Created!");
+      postUserData({
+        userID: getUniqueID(),
+        name: credentails.name,
+        email: credentails.email,
+        imageLink:
+          "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80",
+      });
+      navigate("/home");
+      localStorage.setItem("userEmail", res.user.email);
     } catch (err) {
-      console.error(err);
-      toast.error("Account Could not be created.");
+      console.log(err);
+      toast.error("Cannot Create your Account");
     }
   };
 
