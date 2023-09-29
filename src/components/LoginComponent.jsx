@@ -6,22 +6,16 @@ import "../Sass/LoginComponent.scss";
 import { toast } from "react-toastify";
 
 export default function LoginComponent() {
-  const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
-
+  let navigate = useNavigate();
+  const [credentails, setCredentials] = useState({});
   const login = async () => {
     try {
-      if (credentials.email.endsWith("mgmtech.org")) 
-      {
-        let res = await LoginAPI(credentials.email, credentials.password);
-        toast.success("Signed In to MGM-Connect!");
-        localStorage.setItem("userEmail", res.user.email);
-        navigate("/home");
-      } else {
-        toast.error("Please use an email ending with 'mgmtech.org'");
-      }
+      let res = await LoginAPI(credentails.email, credentails.password);
+      toast.success("Signed In to MGMConnect!");
+      localStorage.setItem("userEmail", res.user.email);
+      navigate("/home");
     } catch (err) {
-      console.error(err);
+      console.log(err);
       toast.error("Please Check your Credentials");
     }
   };
