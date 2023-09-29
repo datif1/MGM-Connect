@@ -75,7 +75,7 @@ export default function Topbar({ currentUser }) {
         <></>
       )}
 
-      <img className="linkedin-logo" src={MGMConnectLogo} alt="MGMConnectLogo" />
+      <img className="mgmconnect-logo" src={MGMConnectLogo} alt="MGMConnectLogo" />
       {isSearch ? (
         <SearchUsers
           setIsSearch={setIsSearch}
