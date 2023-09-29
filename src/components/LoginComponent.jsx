@@ -6,19 +6,26 @@ import "../Sass/LoginComponent.scss";
 import { toast } from "react-toastify";
 
 export default function LoginComponent() {
-  let navigate = useNavigate();
-  const [credentails, setCredentials] = useState({});
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+
   const login = async () => {
     try {
-      let res = await LoginAPI(credentails.email, credentails.password);
-      toast.success("Signed In to MGM-Connect!");
-      localStorage.setItem("userEmail", res.user.email);
-      navigate("/home");
+      if (credentials.email.endsWith("mgmtech.org")) 
+      {
+        let res = await LoginAPI(credentials.email, credentials.password);
+        toast.success("Signed In to MGM-Connect!");
+        localStorage.setItem("userEmail", res.user.email);
+        navigate("/home");
+      } else {
+        toast.error("Please use an email ending with 'mgmtech.org'");
+      }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error("Please Check your Credentials");
     }
   };
+
 
   return (
     <div className="login-wrapper">
@@ -30,30 +37,30 @@ export default function LoginComponent() {
 
         <div className="auth-inputs">
           <input
-            onChange={(event) =>
-              setCredentials({ ...credentails, email: event.target.value })
-            }
-            type="email"
-            className="common-input"
-            placeholder="Email or Phone"
-          />
-          <input
-            onChange={(event) =>
-              setCredentials({ ...credentails, password: event.target.value })
-            }
-            type="password"
-            className="common-input"
-            placeholder="Password"
-          />
+              onChange={(event) =>
+                setCredentials({ ...credentails, email: event.target.value })
+              }
+              type="email"
+              className="common-input"
+              placeholder="Email"
+            />
+            <input
+              onChange={(event) =>
+                setCredentials({ ...credentails, password: event.target.value })
+              }
+              type="password"
+              className="common-input"
+              placeholder="Password"
+            />
         </div>
         <button onClick={login} className="login-btn">
           Sign in
         </button>
       </div>
       <hr className="hr-text" data-content="or" />
-      <div className="google-btn-container">
+      <div className= "btn-container">
         <p className="go-to-signup">
-          New to LinkedIn?{" "}
+          New to MGMConnect?{" "}
           <span className="join-now" onClick={() => navigate("/register")}>
             Join now
           </span>
