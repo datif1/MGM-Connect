@@ -26,6 +26,18 @@ body {
     margin-top: -20px;
     font-family: system-ui;
   }
+
+  .go-to-signup {
+    font-size: 18px;
+  }
+
+  .join-now {
+    color: $mgmkhaki1;
+    font-family: system-ui;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
 }
 
 .login-btn {
@@ -90,17 +102,14 @@ body {
     color: #818078;
     background-color: #fcfcfa;
   }
+
 }
 
-.google-btn-container {
+.btn-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  .google-btn {
-    width: 300px !important;
-  }
 
   .go-to-signup {
     font-size: 18px;
@@ -112,4 +121,7 @@ body {
     cursor: pointer;
     font-size: 18px;
   }
+
+
+  
 }
