@@ -23,7 +23,11 @@ export default function LoginComponent() {
 
   return (
     <div className="login-wrapper">
-      <img src={MGMConnectLogo} className="MGMConnectLogo" />
+      
+      <div className="navbar">        
+        <div className="logo"><img src={MGMConnectLogo} className="MGMConnectLogo" /></div>
+        <div className="title"><h1 >MGM Connect</h1></div>
+      </div>
 
       <div className="login-wrapper-inner">
         <h1 className="heading">Sign in</h1>
