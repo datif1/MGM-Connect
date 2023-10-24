@@ -78,16 +78,25 @@ export default function ProfileCard({ onEdit, currentUser }) {
                 ? currentUser.headline
                 : currentProfile?.headline}
             </p>
-            {(currentUser.city || currentUser.country) &&
-            (currentProfile?.city || currentProfile?.country) ? (
-              <p className="location">
-                {Object.values(currentProfile).length === 0
-                  ? `${currentUser.city}, ${currentUser.country} `
-                  : `${currentProfile?.city}, ${currentUser.country}`}
-              </p>
-            ) : (
-              <></>
-            )}
+
+            <p className="prn">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.prn
+                : currentProfile?.prn}
+            </p>
+
+            <p className="prn">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.year
+                : currentProfile?.year}
+            </p>
+
+            <p className="role">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.role
+                : currentProfile?.role}
+            </p>
+
             {currentUser.website || currentProfile?.website ? (
               <a
                 className="website"
@@ -113,12 +122,14 @@ export default function ProfileCard({ onEdit, currentUser }) {
                 ? currentUser.college
                 : currentProfile?.college}
             </p>
-            <p className="company">
+            <p className="department">
               {Object.values(currentProfile).length === 0
-                ? currentUser.company
-                : currentProfile?.company}
+                ? currentUser.Department
+                : currentProfile?.Department}
             </p>
           </div>
+
+
         </div>
         <p className="about-me">
           {Object.values(currentProfile).length === 0
