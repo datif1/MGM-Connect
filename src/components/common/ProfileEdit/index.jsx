@@ -5,6 +5,7 @@ import "./index.scss";
 
 export default function ProfileEdit({ onEdit, currentUser }) {
   const [editInputs, setEditInputs] = useState(currentUser);
+
   const getInput = (event) => {
     let { name, value } = event.target;
     let input = { [name]: value };
@@ -39,38 +40,20 @@ export default function ProfileEdit({ onEdit, currentUser }) {
           value={editInputs.headline}
           name="headline"
         />
-        <label>Country</label>
-        <input
-          onChange={getInput}
+
+        {/* Add Dropdown Menu for Role Selection */}
+        <label>Role</label>
+        <select
           className="common-input"
-          placeholder="Country"
-          name="country"
-          value={editInputs.country}
-        />
-        <label>City</label>
-        <input
+          value={editInputs.role}
           onChange={getInput}
-          className="common-input"
-          placeholder="City"
-          name="city"
-          value={editInputs.city}
-        />
-        <label>Company</label>
-        <input
-          onChange={getInput}
-          className="common-input"
-          placeholder="Company"
-          value={editInputs.company}
-          name="company"
-        />
-        <label>Industry </label>
-        <input
-          onChange={getInput}
-          className="common-input"
-          placeholder="Industry"
-          name="industry"
-          value={editInputs.industry}
-        />
+          name="role"
+        >
+          <option value="Student">Student</option>
+          <option value="Faculty">Faculty</option>
+        </select>
+        {/* End of Dropdown Menu */}
+        
         <label>College</label>
         <input
           onChange={getInput}
@@ -78,6 +61,30 @@ export default function ProfileEdit({ onEdit, currentUser }) {
           placeholder="College"
           name="college"
           value={editInputs.college}
+        />
+        <label>Department</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Department"
+          value={editInputs.department}
+          name="Department"
+        />
+        <label>Year</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="year"
+          name="year"
+          value={editInputs.year}
+        />
+        <label>PRN</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="prn"
+          name="prn"
+          value={editInputs.prn}
         />
         <label>Website</label>
         <input
@@ -104,6 +111,7 @@ export default function ProfileEdit({ onEdit, currentUser }) {
           name="skills"
           value={editInputs.skills}
         />
+
       </div>
       <div className="save-container">
         <button className="save-btn" onClick={updateProfileData}>
