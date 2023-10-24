@@ -1,6 +1,6 @@
 $mgmkhaki1: #D3BAA1;
 $mgmkhaki2: #C29C7D;
-$mgmkhaki3: #A18965;
+$mgmkhaki3: #9f8256;
 
 body {
   margin: 0;
@@ -16,6 +16,16 @@ body {
     justify-content: center;
     align-items: center;
   }
+
+  .navbar{
+    display: flex;
+    justify-content: center;
+    align-items: left;
+
+  }
+
+  .title
+
   .heading {
     font-family: system-ui;
     font-weight: 500;
