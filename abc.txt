@@ -1,0 +1,2492 @@
+> node_modules
+> public
+> src
+
+These are the files that lie under my src folder , i am providing you step by step details about my 
+project so for creating the further new web pages it will be helpful for you, so please be patient an keep all
+this in mind
+
+> api
+> assets
+> components
+> helpers
+> layouts
+> Pages
+> Routes
+> Sass
+
+JS firebaseConfig.js
+
+index.scss
+
+main.jsx
+
+.eslintrc.cjs
+
+◆ .gitattributes
+
+◆ .gitignore
+
+<> index.html
+
+{} package-lock.json
+
+{} package.json
+
+README.md
+
+Js vite.config.js
+
+
+
+now i want you to refer to these different blocks of code in my src file of my web application mentioned according to their respective 
+sub directories, i am specifying all the modules that i have created  and create a new web page and its related component page for me to 
+implement a notification panel where the students will be able to view about any notices that the faculty have uploaded. also only the users 
+who is a faculty must be able to upload or make any changes on this page. The Users who are students should only have a view only access to this page 
+through which they can only see whats the latest updates
+
+Now this is the main.jsx file under my src directory
+
+"import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./Routes";
+import { app, auth } from "./firebaseConfig";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "react-quill/dist/quill.snow.css";
+import "./index.scss";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+    <ToastContainer />
+  </React.StrictMode>
+);"
+
+This is the code block for page "Home.jsx" under the pages directory in my src file
+
+"import React, { useEffect, useState } from "react";
+import HomeComponent from "../components/HomeComponent";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebaseConfig";
+import Loader from "../components/common/Loader";
+
+export default function Home({ currentUser }) {
+  const [loading, setLoading] = useState(true);
+  let navigate = useNavigate();
+  useEffect(() => {
+    onAuthStateChanged(auth, (res) => {
+      if (!res?.accessToken) {
+        navigate("/");
+      } else {
+        setLoading(false);
+      }
+    });
+  }, []);
+  return loading ? <Loader /> : <HomeComponent currentUser={currentUser} />;
+}"
+
+This is the code block for Component "HomeComponent.jsx" Under the Components directory in my src file
+
+"import React from "react";
+import "../Sass/HomeComponent.scss";
+import PostStatus from "./common/PostUpdate";
+
+export default function HomeComponent({ currentUser }) {
+  return (
+    <div className="home-component">
+      <PostStatus currentUser={currentUser} />
+    </div>
+  );
+}"
+
+This is the code block for home page layout "Homelayout.jsx" Under the layouts directory in my src file
+
+import React, { useMemo, useState } from "react";
+import Home from "../Pages/Home";
+import { getCurrentUser } from "../api/FirestoreAPI";
+import Topbar from "../components/common/Topbar";
+
+export default function HomeLayout() {
+  const [currentUser, setCurrentUser] = useState({});
+
+  useMemo(() => {
+    getCurrentUser(setCurrentUser);
+  }, []);
+  return (
+    <div>
+      <Topbar currentUser={currentUser} />
+      <Home currentUser={currentUser} />
+    </div>
+  );
+}
+
+This is the code block for page "Profile.jsx" under the pages directory in my src file:
+
+import React, { useEffect, useState } from "react";
+import ProfileComponent from "../components/ProfileComponent";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebaseConfig";
+import Loader from "../components/common/Loader";
+
+export default function Profile({ currentUser }) {
+  const [loading, setLoading] = useState(true);
+  let navigate = useNavigate();
+  useEffect(() => {
+    onAuthStateChanged(auth, (res) => {
+      if (!res?.accessToken) {
+        navigate("/");
+      } else {
+        setLoading(false);
+      }
+    });
+  }, []);
+  return loading ? <Loader /> : <ProfileComponent currentUser={currentUser} />;
+}
+
+This is the code block for Component "ProfileComponent.jsx" Under the Components directory in my src file:
+
+import React, { useState } from "react";
+import ProfileCard from "./common/ProfileCard";
+import ProfileEdit from "./common/ProfileEdit";
+
+export default function ProfileComponent({ currentUser }) {
+  const [isEdit, setisEdit] = useState(false);
+
+  const onEdit = () => {
+    setisEdit(!isEdit);
+  };
+  return (
+    <div>
+      {isEdit ? (
+        <ProfileEdit onEdit={onEdit} currentUser={currentUser} />
+      ) : (
+        <ProfileCard currentUser={currentUser} onEdit={onEdit} />
+      )}
+    </div>
+  );
+}
+
+This is the code block for home page layout "Profilelayout.jsx" Under the layouts directory in my src file:
+
+import React, { useMemo, useState } from "react";
+import { getCurrentUser } from "../api/FirestoreAPI";
+import Topbar from "../components/common/Topbar";
+import Profile from "../Pages/Profile";
+
+export default function ProfileLayout() {
+  const [currentUser, setCurrentUser] = useState({});
+
+  useMemo(() => {
+    getCurrentUser(setCurrentUser);
+  }, []);
+  return (
+    <div>
+      <Topbar currentUser={currentUser} />
+      <Profile currentUser={currentUser} />
+    </div>
+  );
+}
+
+This is the code block for page "Login.jsx" under the pages directory in my src file
+
+"import React, { useEffect, useState } from "react";
+import LoginComponent from "../components/LoginComponent";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebaseConfig";
+import Loader from "../components/common/Loader";
+
+export default function Login() {
+  const [loading, setLoading] = useState(true);
+  let navigate = useNavigate();
+  useEffect(() => {
+    onAuthStateChanged(auth, (res) => {
+      if (res?.accessToken) {
+        navigate("/home");
+      } else {
+        setLoading(false);
+      }
+    });
+  }, []);
+  return loading ? <Loader /> : <LoginComponent />;
+}"
+
+This is the code block for Component "LoginComponent.jsx" Under the Components directory in my src file
+
+"import React, { useState } from "react";
+import { LoginAPI } from "../api/AuthAPI";
+import MGMConnectLogo from "../assets/MGMConnectLogo.png";
+import { useNavigate } from "react-router-dom";
+import "../Sass/LoginComponent.scss";
+import { toast } from "react-toastify";
+
+export default function LoginComponent() {
+  let navigate = useNavigate();
+  const [credentails, setCredentials] = useState({});
+  const login = async () => {
+    try {
+      let res = await LoginAPI(credentails.email, credentails.password);
+      toast.success("Signed In to MGMConnect!");
+      localStorage.setItem("userEmail", res.user.email);
+      navigate("/home");
+    } catch (err) {
+      console.log(err);
+      toast.error("Please Check your Credentials");
+    }
+  };
+
+
+  return (
+    <div className="login-wrapper">
+      
+      <div className="navbar">        
+        <div className="logo"><img src={MGMConnectLogo} className="MGMConnectLogo" /></div>
+        <div className="title"><h1 >MGM Connect</h1></div>
+      </div>
+
+      <div className="login-wrapper-inner">
+        <h1 className="heading">Sign in</h1>
+        <p className="sub-heading">Stay updated on your professional world</p>
+
+        <div className="auth-inputs">
+          <input
+              onChange={(event) =>
+                setCredentials({ ...credentails, email: event.target.value })
+              }
+              type="email"
+              className="common-input"
+              placeholder="Email"
+            />
+            <input
+              onChange={(event) =>
+                setCredentials({ ...credentails, password: event.target.value })
+              }
+              type="password"
+              className="common-input"
+              placeholder="Password"
+            />
+        </div>
+        <button onClick={login} className="login-btn">
+          Sign in
+        </button>
+      </div>
+      <hr className="hr-text" data-content="or" />
+      <div className= "btn-container">
+        <p className="go-to-signup">
+          New to MGMConnect?{" "}
+          <span className="join-now" onClick={() => navigate("/register")}>
+            Join now
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+}"
+
+This is the code block for page "Connections.jsx" under the pages directory in my src file
+
+import React, { useEffect, useState } from "react";
+import ConnectionsComponent from "../components/ConnectionsComponent";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebaseConfig";
+import Loader from "../components/common/Loader";
+
+export default function Connections({ currentUser }) {
+  const [loading, setLoading] = useState(true);
+  let navigate = useNavigate();
+  useEffect(() => {
+    onAuthStateChanged(auth, (res) => {
+      if (!res?.accessToken) {
+        navigate("/");
+      } else {
+        setLoading(false);
+      }
+    });
+  }, []);
+  return loading ? (
+    <Loader />
+  ) : (
+    <ConnectionsComponent currentUser={currentUser} />
+  );
+}
+
+This is the code block for Component "ConnectionsComponent.jsx" Under the Components directory in my src file
+
+import React, { useEffect, useState } from "react";
+import { getAllUsers, addConnection } from "../api/FirestoreAPI";
+import ConnectedUsers from "./common/ConnectedUsers";
+import "../Sass/ConnectionsComponent.scss";
+
+export default function ConnectionsComponent({ currentUser }) {
+  const [users, setUsers] = useState([]);
+  const getCurrentUser = (id) => {
+    addConnection(currentUser.id, id);
+  };
+  useEffect(() => {
+    getAllUsers(setUsers);
+  }, []);
+
+  return users.length > 1 ? (
+    <div className="connections-main">
+      {users.map((user) => {
+        return user.id === currentUser.id ? (
+          <></>
+        ) : (
+          <ConnectedUsers
+            currentUser={currentUser}
+            user={user}
+            getCurrentUser={getCurrentUser}
+          />
+        );
+      })}
+    </div>
+  ) : (
+    <div className="connections-main">No Connections to Add!</div>
+  );
+}
+
+This is the code block for Connections page layout "ConnectionLayout.jsx" Under the layouts directory in my src file
+
+"import React, { useMemo, useState } from "react";
+import Connections from "../Pages/Connections";
+import { getCurrentUser } from "../api/FirestoreAPI";
+import Topbar from "../components/common/Topbar";
+
+export default function ConnectionLayout() {
+  const [currentUser, setCurrentUser] = useState({});
+
+  useMemo(() => {
+    getCurrentUser(setCurrentUser);
+  }, []);
+  return (
+    <div>
+      <Topbar currentUser={currentUser} />
+      <Connections currentUser={currentUser} />
+    </div>
+  );
+}"
+
+
+This is a block of code for the file firebaseConfig.js that lies under my src file, i have used this file for 
+integrating with the firebase console with my source file
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCeeOj4XTmOKIf_2SPABEXcmlLWkdF5rxU",
+  authDomain: "mgm-connect-77f16.firebaseapp.com",
+  projectId: "mgm-connect-77f16",
+  storageBucket: "mgm-connect-77f16.appspot.com",
+  messagingSenderId: "893895799812",
+  appId: "1:893895799812:web:b8529284ca187aa6fb3151",
+  measurementId: "G-9SSGDVG7RQ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
+export { auth, app, firestore, storage };
+
+Now, i will share you the files that i have created under my api directory in the src folder-
+
+here i have created 3 jsx files as follows
+
+first is the AuthAPI.jsx and here's the block of code for it:
+
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+  } from "firebase/auth";
+  import { auth } from "../firebaseConfig";
+  
+  export const LoginAPI = (email, password) => {
+    try {
+      let response = signInWithEmailAndPassword(auth, email, password);
+      return response;
+    } catch (err) {
+      return err;
+    }
+  };
+  
+  export const RegisterAPI = (email, password) => {
+    try {
+      let response = createUserWithEmailAndPassword(auth, email, password);
+      return response;
+    } catch (err) {
+      return err;
+    }
+  };
+  
+  export const GoogleSignInAPI = () => {
+    try {
+      let googleProvider = new GoogleAuthProvider();
+      let res = signInWithPopup(auth, googleProvider);
+      return res;
+    } catch (err) {
+      return err;
+    }
+  };
+  
+  export const onLogout = () => {
+    try {
+      signOut(auth);
+    } catch (err) {
+      return err;
+    }
+  };
+
+  
+Second is the FirestoreAPI.jsx and here's the block of code for it:
+
+import { firestore } from "../firebaseConfig";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  doc,
+  updateDoc,
+  query,
+  where,
+  setDoc,
+  deleteDoc,
+  orderBy,
+  serverTimestamp,
+} from "firebase/firestore";
+import { toast } from "react-toastify";
+
+let postsRef = collection(firestore, "posts");
+let userRef = collection(firestore, "users");
+let likeRef = collection(firestore, "likes");
+let commentsRef = collection(firestore, "comments");
+let connectionRef = collection(firestore, "connections");
+
+export const postStatus = (object) => {
+  addDoc(postsRef, object)
+    .then(() => {
+      toast.success("Post has been added successfully");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getStatus = (setAllStatus) => {
+  const q = query(postsRef, orderBy("timeStamp"));
+  onSnapshot(q, (response) => {
+    setAllStatus(
+      response.docs.map((docs) => {
+        return { ...docs.data(), id: docs.id };
+      })
+    );
+  });
+};
+
+export const getAllUsers = (setAllUsers) => {
+  onSnapshot(userRef, (response) => {
+    setAllUsers(
+      response.docs.map((docs) => {
+        return { ...docs.data(), id: docs.id };
+      })
+    );
+  });
+};
+
+export const getSingleStatus = (setAllStatus, id) => {
+  const singlePostQuery = query(postsRef, where("userID", "==", id));
+  onSnapshot(singlePostQuery, (response) => {
+    setAllStatus(
+      response.docs.map((docs) => {
+        return { ...docs.data(), id: docs.id };
+      })
+    );
+  });
+};
+
+export const getSingleUser = (setCurrentUser, email) => {
+  const singleUserQuery = query(userRef, where("email", "==", email));
+  onSnapshot(singleUserQuery, (response) => {
+    setCurrentUser(
+      response.docs.map((docs) => {
+        return { ...docs.data(), id: docs.id };
+      })[0]
+    );
+  });
+};
+
+export const postUserData = (object) => {
+  addDoc(userRef, object)
+    .then(() => {})
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getCurrentUser = (setCurrentUser) => {
+  onSnapshot(userRef, (response) => {
+    setCurrentUser(
+      response.docs
+        .map((docs) => {
+          return { ...docs.data(), id: docs.id };
+        })
+        .filter((item) => {
+          return item.email === localStorage.getItem("userEmail");
+        })[0]
+    );
+  });
+};
+
+export const editProfile = (userID, payload) => {
+  let userToEdit = doc(userRef, userID);
+
+  updateDoc(userToEdit, payload)
+    .then(() => {
+      toast.success("Profile has been updated successfully");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const likePost = (userId, postId, liked) => {
+  try {
+    let docToLike = doc(likeRef, `${userId}_${postId}`);
+    if (liked) {
+      deleteDoc(docToLike);
+    } else {
+      setDoc(docToLike, { userId, postId });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getLikesByUser = (userId, postId, setLiked, setLikesCount) => {
+  try {
+    let likeQuery = query(likeRef, where("postId", "==", postId));
+
+    onSnapshot(likeQuery, (response) => {
+      let likes = response.docs.map((doc) => doc.data());
+      let likesCount = likes?.length;
+
+      const isLiked = likes.some((like) => like.userId === userId);
+
+      setLikesCount(likesCount);
+      setLiked(isLiked);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const postComment = (postId, comment, timeStamp, name) => {
+  try {
+    addDoc(commentsRef, {
+      postId,
+      comment,
+      timeStamp,
+      name,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getComments = (postId, setComments) => {
+  try {
+    let singlePostQuery = query(commentsRef, where("postId", "==", postId));
+
+    onSnapshot(singlePostQuery, (response) => {
+      const comments = response.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      setComments(comments);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const updatePost = (id, status, postImage) => {
+  let docToUpdate = doc(postsRef, id);
+  try {
+    updateDoc(docToUpdate, { status, postImage });
+    toast.success("Post has been updated!");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const deletePost = (id) => {
+  let docToDelete = doc(postsRef, id);
+  try {
+    deleteDoc(docToDelete);
+    toast.success("Post has been Deleted!");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const addConnection = (userId, targetId) => {
+  try {
+    let connectionToAdd = doc(connectionRef, `${userId}_${targetId}`);
+
+    setDoc(connectionToAdd, { userId, targetId });
+
+    toast.success("Connection Added!");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getConnections = (userId, targetId, setIsConnected) => {
+  try {
+    let connectionsQuery = query(
+      connectionRef,
+      where("targetId", "==", targetId)
+    );
+
+    onSnapshot(connectionsQuery, (response) => {
+      let connections = response.docs.map((doc) => doc.data());
+
+      const isConnected = connections.some(
+        (connection) => connection.userId === userId
+      );
+
+      setIsConnected(isConnected);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+Third is the ImageUpload.jsx and here's the block of code for it:
+
+import { storage } from "../firebaseConfig";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { editProfile } from "./FirestoreAPI";
+
+export const uploadImage = (
+  file,
+  id,
+  setModalOpen,
+  setProgress,
+  setCurrentImage
+) => {
+  const profilePicsRef = ref(storage, `profileImages/${file.name}`);
+  const uploadTask = uploadBytesResumable(profilePicsRef, file);
+
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const progress = Math.round(
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      );
+
+      setProgress(progress);
+    },
+    (error) => {
+      console.error(err);
+    },
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((response) => {
+        editProfile(id, { imageLink: response });
+        setModalOpen(false);
+        setCurrentImage({});
+        setProgress(0);
+      });
+    }
+  );
+};
+
+export const uploadPostImage = (file, setPostImage, setProgress) => {
+  const postPicsRef = ref(storage, `postImages/${file.name}`);
+  const uploadTask = uploadBytesResumable(postPicsRef, file);
+
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const progress = Math.round(
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      );
+
+      setProgress(progress);
+    },
+    (error) => {
+      console.error(err);
+    },
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((response) => {
+        setPostImage(response);
+      });
+    }
+  );
+};
+
+Then i have got an SASS Directory under my src Folder where i have created 3 scss files for my different pages in which i have 
+writtent the code for each page for its design and different designing characteristics
+
+here are those 3 files:
+
+First is "ConnectionsComponent.scss" that is related to the "ConnectionsComponent.jsx" file:
+
+.connections-main {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  text-align: center;
+  margin: 30px;
+  border: 1px solid #bbbbbb;
+  background-color: white;
+  border-radius: 10px;
+  .grid-child {
+    border: 1px solid #bbbbbb;
+    width: 250px;
+    height: 330px;
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+
+    img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-top: 20px;
+    }
+
+    .name {
+      font-family: system-ui;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .headline {
+      margin-top: -15px;
+      font-family: system-ui;
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    button {
+      width: 90%;
+      height: 40px;
+      position: absolute;
+
+      bottom: 10px;
+      cursor: pointer;
+      background-color: white;
+      color: #004284;
+      border: 1px solid #004284;
+      font-size: 16px;
+      font-family: system-ui;
+      border-radius: 30px;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      border: 2px solid #004284;
+      background-color: #bbdefb;
+    }
+  }
+}
+
+Second is "HomeComponent.scss" that is related to the "HomeComponent.jsx" file:
+
+.home-component {
+}
+
+Third is "LoginComponent.scss" that is related to the "LoginComponent.jsx" file:
+
+$mgmkhaki1: #D3BAA1;
+$mgmkhaki2: #C29C7D;
+$mgmkhaki3: #9f8256;
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.login-wrapper {
+  background-color: white !important;
+  height: 100vh;
+  .login-wrapper-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .navbar{
+    display: flex;
+    justify-content: center;
+    align-items: left;
+
+  }
+
+  .title
+
+  .heading {
+    font-family: system-ui;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  .sub-heading {
+    margin-top: -20px;
+    font-family: system-ui;
+  }
+
+  .go-to-signup {
+    font-size: 18px;
+  }
+
+  .join-now {
+    color: $mgmkhaki1;
+    font-family: system-ui;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+}
+
+.login-btn {
+  width: 300px;
+  height: 50px;
+  cursor: pointer;
+  background-color: $mgmkhaki2;
+  border-radius: 30px;
+  outline: none;
+  border: none;
+  font-family: system-ui;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.login-btn:hover {
+  background-color: $mgmkhaki3;
+}
+
+.auth-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+}
+
+.MGMConnectLogo {
+  width: 80px;
+}
+
+.hr-text {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: center;
+  height: 1.5em;
+  opacity: 0.5;
+  &:before {
+    content: "";
+    // use the linear-gradient for the fading effect
+    // use a solid background color for a solid bar
+    background: linear-gradient(to right, transparent, #818078, transparent);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+  }
+  &:after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    color: black;
+
+    padding: 0 0.5em;
+    line-height: 1.5em;
+    // this is really the only tricky part, you need to specify the background color of the container element...
+    color: #818078;
+    background-color: #fcfcfa;
+  }
+
+}
+
+.btn-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .go-to-signup {
+    font-size: 18px;
+  }
+
+  .join-now {
+    color: $mgmkhaki1;
+    font-family: system-ui;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+}
+
+Then i have created a Routes folder under my src Folder in which 
+i have created an index.jsx file
+
+here's the block of code for it:
+
+import { createBrowserRouter } from "react-router-dom";
+import Login from "../Pages/Login";
+import Register from "../Pages/Register";
+import HomeLayout from "../layouts/HomeLayout";
+import ProfileLayout from "../layouts/ProfileLayout";
+import ConnectionLayout from "../layouts/ConnectionLayout";
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/home",
+    element: <HomeLayout />,
+  },
+  {
+    path: "/profile",
+    element: <ProfileLayout />,
+  },
+  {
+    path: "/connections",
+    element: <ConnectionLayout />,
+  },
+]);
+
+Then i have got a components Directory under my src folder which contains a sub directory 
+named as common. in this common directory i have got various different modules of different components
+i have refered to throught my different code blocks.
+
+so the list of different modeules inside the common folder under the component folder is as follows:
+
+1. Button
+2. ConnectedUsers
+3. FileUploadModal
+4. Loader
+5. Modal
+6. Postscard
+7. PostUpdate
+8. Topbar
+9. SearchUsers
+10. ProfileCard
+11. ProfileEdit
+12. ProfilePopup
+
+i will list down the respective block of jsx and scss codes for each module that i have listed
+so that you could refer to them while creating any new such components or modules required
+for the new web page
+
+So the 1. Button Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React from "react";
+import "./index.scss";
+
+export default function Button({ title, onClick }) {
+  return (
+    <button className="common-btn" onClick={onClick}>
+      {title}
+    </button>
+  );
+}
+
+code block for index.scss is:
+
+.common-btn {
+    width: 200px;
+    height: 30px;
+    cursor: pointer;
+    background-color: whitesmoke;
+    border: 2px solid #003365;
+    color: #014488;
+    border-radius: 30px;
+    font-family: system-ui;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 7px 0;
+  }
+  
+  .common-btn:hover {
+    background-color: rgb(230, 230, 230);
+    border: 2px solid #014488;
+    color: #014488;
+  }
+
+So the 2. ConnectedUsers Module contains only 1 files index.jsx
+
+code block for index.jsx is:
+
+import React, { useEffect, useState } from "react";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { getConnections } from "../../../api/FirestoreAPI";
+
+export default function ConnectedUsers({ user, getCurrentUser, currentUser }) {
+  const [isConnected, setIsConnected] = useState(false);
+  useEffect(() => {
+    getConnections(currentUser.id, user.id, setIsConnected);
+  }, [currentUser.id, user.id]);
+  return isConnected ? (
+    <></>
+  ) : (
+    <div className="grid-child">
+      <img src={user.imageLink} />
+      <p className="name">{user.name}</p>
+      <p className="headline">{user.headline}</p>
+
+      <button onClick={() => getCurrentUser(user.id)}>
+        <AiOutlineUsergroupAdd size={20} />
+        Connect
+      </button>
+    </div>
+  );
+}
+
+So the 3. FileUploadModal Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React from "react";
+import { Button, Modal, Progress } from "antd";
+import "./index.scss";
+
+export default function FileUploadModal({
+  modalOpen,
+  setModalOpen,
+  getImage,
+  uploadImage,
+  currentImage,
+  progress,
+}) {
+  return (
+    <div>
+      <Modal
+        title="Add a Profile Image"
+        centered
+        open={modalOpen}
+        onOk={() => setModalOpen(false)}
+        onCancel={() => setModalOpen(false)}
+        footer={[
+          <Button
+            disabled={currentImage.name ? false : true}
+            key="submit"
+            type="primary"
+            onClick={uploadImage}
+          >
+            Upload Profile Picture
+          </Button>,
+        ]}
+      >
+        <div className="image-upload-main">
+          <p>{currentImage.name}</p>
+          <label className="upload-btn" for="image-upload">
+            Add an Image
+          </label>
+          {progress === 0 ? (
+            <></>
+          ) : (
+            <div className="progress-bar">
+              <Progress type="circle" percent={progress} />
+            </div>
+          )}
+          <input hidden id="image-upload" type={"file"} onChange={getImage} />
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+.image-upload-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    flex-direction: column;
+    label {
+      border: 1px solid #212121;
+      padding: 10px;
+      cursor: pointer;
+      font-family: system-ui;
+    }
+  
+    .progress-bar {
+      padding: 20px;
+    }
+  }
+
+So the 4. Loader Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React from "react";
+import { Space, Spin } from "antd";
+import "./index.scss";
+
+export default function Loader() {
+  return (
+    <div className="loader">
+      <p>Loading..Please Wait..</p>
+      <Space size="middle">
+        <Spin size="large" />
+      </Space>
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    gap: 10px;
+  
+    p {
+      font-family: system-ui;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.9);
+      font-size: 20px;
+    }
+  }
+
+So the 5. Modal Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useState } from "react";
+import { Button, Modal, Progress } from "antd";
+import { AiOutlinePicture } from "react-icons/ai";
+import ReactQuill from "react-quill";
+import "./index.scss";
+
+const ModalComponent = ({
+  modalOpen,
+  setModalOpen,
+  sendStatus,
+  setStatus,
+  status,
+  isEdit,
+  updateStatus,
+  uploadPostImage,
+  setPostImage,
+  postImage,
+  currentPost,
+  setCurrentPost,
+}) => {
+  const [progress, setProgress] = useState(0);
+  return (
+    <>
+      <Modal
+        title="Create a post"
+        centered
+        open={modalOpen}
+        onOk={() => {
+          setStatus("");
+          setModalOpen(false);
+          setPostImage("");
+          setCurrentPost({});
+        }}
+        onCancel={() => {
+          setStatus("");
+          setModalOpen(false);
+          setPostImage("");
+          setCurrentPost({});
+        }}
+        footer={[
+          <Button
+            onClick={isEdit ? updateStatus : sendStatus}
+            key="submit"
+            type="primary"
+            disabled={status.length > 0 ? false : true}
+          >
+            {isEdit ? "Update" : "Post"}
+          </Button>,
+        ]}
+      >
+        <div className="posts-body">
+          <ReactQuill
+            className="modal-input"
+            theme="snow"
+            value={status}
+            placeholder="Share Something Useful.."
+            onChange={setStatus}
+          />
+          {progress === 0 || progress === 100 ? (
+            <></>
+          ) : (
+            <div className="progress-bar">
+              <Progress type="circle" percent={progress} />
+            </div>
+          )}
+          {postImage?.length > 0 || currentPost?.postImage?.length ? (
+            <img
+              className="preview-image"
+              src={postImage || currentPost?.postImage}
+              alt="postImage"
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+        <label for="pic-upload">
+          <AiOutlinePicture size={35} className="picture-icon" />
+        </label>
+        <input
+          id="pic-upload"
+          type={"file"}
+          hidden
+          onChange={(event) =>
+            uploadPostImage(event.target.files[0], setPostImage, setProgress)
+          }
+        />
+      </Modal>
+    </>
+  );
+};
+
+export default ModalComponent;
+
+code block for index.scss is:
+
+.modal-input {
+    border: none !important;
+    background-color: white;
+    outline: none;
+    color: black;
+    font-size: 16px;
+    font-family: system-ui;
+    width: 100%;
+    resize: none;
+  }
+  
+  .ql-container.ql-snow,
+  .ql-toolbar.ql-snow {
+    border: none !important;
+  }
+  
+  .ql-container.ql-snow {
+    font-size: 20px;
+    font-family: system-ui;
+  }
+  
+  .picture-icon {
+    color: #C29C7D;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+  }
+  
+  .preview-image {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .posts-body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+So the 6. Postscard Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Modal } from "antd";
+import { BsPencil, BsTrash } from "react-icons/bs";
+import {
+  getCurrentUser,
+  getAllUsers,
+  deletePost,
+  getConnections,
+} from "../../../api/FirestoreAPI";
+import LikeButton from "../LikeButton";
+import "./index.scss";
+
+export default function PostsCard({ posts, id, getEditData }) {
+  let navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState({});
+  const [allUsers, setAllUsers] = useState([]);
+  const [imageModal, setImageModal] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  useMemo(() => {
+    getCurrentUser(setCurrentUser);
+    getAllUsers(setAllUsers);
+  }, []);
+
+  useEffect(() => {
+    getConnections(currentUser.id, posts.userID, setIsConnected);
+  }, [currentUser.id, posts.userID]);
+
+  return isConnected || currentUser.id === posts.userID ? (
+    <div className="posts-card" key={id}>
+      <div className="post-image-wrapper">
+        {currentUser.id === posts.userID ? (
+          <div className="action-container">
+            <BsPencil
+              size={20}
+              className="action-icon"
+              onClick={() => getEditData(posts)}
+            />
+            <BsTrash
+              size={20}
+              className="action-icon"
+              onClick={() => deletePost(posts.id)}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
+
+        <img
+          alt="profile-image"
+          className="profile-image"
+          src={
+            allUsers
+              .filter((item) => item.id === posts.userID)
+              .map((item) => item.imageLink)[0]
+          }
+        />
+        <div>
+          <p
+            className="name"
+            onClick={() =>
+              navigate("/profile", {
+                state: { id: posts?.userID, email: posts.userEmail },
+              })
+            }
+          >
+            {allUsers.filter((user) => user.id === posts.userID)[0]?.name}
+          </p>
+          <p className="headline">
+            {allUsers.filter((user) => user.id === posts.userID)[0]?.headline}
+          </p>
+          <p className="timestamp">{posts.timeStamp}</p>
+        </div>
+      </div>
+      {posts.postImage ? (
+        <img
+          onClick={() => setImageModal(true)}
+          src={posts.postImage}
+          className="post-image"
+          alt="post-image"
+        />
+      ) : (
+        <></>
+      )}
+      <p
+        className="status"
+        dangerouslySetInnerHTML={{ __html: posts.status }}
+      ></p>
+
+      <LikeButton
+        userId={currentUser?.id}
+        postId={posts.id}
+        currentUser={currentUser}
+      />
+
+      <Modal
+        centered
+        open={imageModal}
+        onOk={() => setImageModal(false)}
+        onCancel={() => setImageModal(false)}
+        footer={[]}
+      >
+        <img
+          onClick={() => setImageModal(true)}
+          src={posts.postImage}
+          className="post-image modal"
+          alt="post-image"
+        />
+      </Modal>
+    </div>
+  ) : (
+    <></>
+  );
+}
+
+code block for index.scss is:
+
+.posts-card {
+    width: 550px;
+    min-height: auto;
+    background-color: whitesmoke;
+    margin-top: 30px;
+    border: 1px solid #b7b7b7;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+    .post-image-wrapper {
+      display: flex;
+      padding: 15px;
+      gap: 10px;
+      position: relative;
+    }
+    .profile-image {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  
+    .name {
+      font-family: system-ui, sans-serif;
+      font-size: 18px;
+      color: #212121;
+      font-weight: 600;
+      margin: 0px 0 0 0px;
+      cursor: pointer;
+    }
+    .headline {
+      font-family: system-ui, sans-serif;
+      font-size: 15px;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 500;
+      margin: 0px 0 0 0px;
+    }
+    .timestamp {
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 400;
+      margin: 0px 0 0 0px;
+    }
+  
+    .status {
+      text-align: left;
+      margin: 10px 0 0 10px;
+      font-family: Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.9);
+    }
+  }
+  
+  .action-container {
+    position: absolute;
+    right: 20px;
+    cursor: pointer;
+    display: flex;
+    top: 10px;
+    .action-icon {
+      color: #474747;
+      padding: 10px;
+    }
+  
+    .action-icon:hover {
+      color: #000000;
+      background-color: #b7b7b7;
+      padding: 10px;
+      border-radius: 50%;
+    }
+  }
+  
+  .post-image {
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .modal {
+    margin-top: 30px;
+  }
+
+So the 7. PostUpdate Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useState, useMemo } from "react";
+import { postStatus, getStatus, updatePost } from "../../../api/FirestoreAPI";
+import { getCurrentTimeStamp } from "../../../helpers/useMoment";
+import ModalComponent from "../Modal";
+import { uploadPostImage } from "../../../api/ImageUpload";
+import { getUniqueID } from "../../../helpers/getUniqueId";
+import PostsCard from "../PostsCard";
+import "./index.scss";
+
+export default function PostStatus({ currentUser }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [status, setStatus] = useState("");
+  const [allStatuses, setAllStatus] = useState([]);
+  const [currentPost, setCurrentPost] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
+  const [postImage, setPostImage] = useState("");
+
+  const sendStatus = async () => {
+    let object = {
+      status: status,
+      timeStamp: getCurrentTimeStamp("LLL"),
+      userEmail: currentUser.email,
+      userName: currentUser.name,
+      postID: getUniqueID(),
+      userID: currentUser.id,
+      postImage: postImage,
+    };
+    await postStatus(object);
+    await setModalOpen(false);
+    setIsEdit(false);
+    await setStatus("");
+  };
+
+  const getEditData = (posts) => {
+    setModalOpen(true);
+    setStatus(posts?.status);
+    setCurrentPost(posts);
+    setIsEdit(true);
+  };
+
+  const updateStatus = () => {
+    updatePost(currentPost.id, status, postImage);
+    setModalOpen(false);
+  };
+
+  useMemo(() => {
+    getStatus(setAllStatus);
+  }, []);
+
+  return (
+    <div className="post-status-main">
+      <div className="user-details">
+        <img src={currentUser?.imageLink} alt="imageLink" />
+        <p className="name">{currentUser?.name}</p>
+        <p className="headline">{currentUser?.headline}</p>
+      </div>
+      <div className="post-status">
+        <img
+          className="post-image"
+          src={currentUser?.imageLink}
+          alt="imageLink"
+        />
+        <button
+          className="open-post-modal"
+          onClick={() => {
+            setModalOpen(true);
+            setIsEdit(false);
+          }}
+        >
+          Start a Post
+        </button>
+      </div>
+
+      <ModalComponent
+        setStatus={setStatus}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        status={status}
+        sendStatus={sendStatus}
+        isEdit={isEdit}
+        updateStatus={updateStatus}
+        uploadPostImage={uploadPostImage}
+        postImage={postImage}
+        setPostImage={setPostImage}
+        setCurrentPost={setCurrentPost}
+        currentPost={currentPost}
+      />
+
+      <div>
+        {allStatuses.map((posts) => {
+          return (
+            <div key={posts.id}>
+              <PostsCard posts={posts} getEditData={getEditData} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+.post-status-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    .user-details {
+      width: 550px;
+      height: auto;
+      background-color: whitesmoke;
+      margin-top: 100px;
+      border: 1px solid #b7b7b7;
+      border-radius: 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-top: -60px;
+        border: 1px solid #b7b7b7;
+        padding: 1px;
+      }
+  
+      .name {
+        font-weight: 600;
+        font-family: system-ui;
+      }
+  
+      .headline {
+        font-family: system-ui;
+        margin-top: -15px;
+      }
+    }
+    .post-status {
+      width: 550px;
+      height: 120px;
+      background-color: whitesmoke;
+      margin-top: 30px;
+      border: 1px solid #b7b7b7;
+      border-radius: 7px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+  
+      .post-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+      .open-post-modal {
+        width: 80%;
+        height: 50px;
+        text-align: left;
+        color: rgba(84, 84, 84, 0.89);
+        background-color: whitesmoke;
+        outline: none;
+        border: 1px solid #b7b7b7;
+        border-radius: 30px;
+        margin-left: -30px;
+        cursor: pointer;
+        padding: 15px;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: system-ui, sans-serif;
+      }
+  
+      .open-post-modal:hover {
+        background-color: #dcdbdb;
+      }
+    }
+  }
+
+So the 8. Topbar Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useEffect, useState } from "react";
+import MGMConnectLogo from "../../../assets/MGMConnectLogo.png";
+import user from "../../../assets/user.png";
+import SearchUsers from "../SearchUsers";
+import {
+  AiOutlineHome,
+  AiOutlineUserSwitch,
+  AiOutlineSearch,
+  AiOutlineMessage,
+  AiOutlineBell,
+} from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { BsBriefcase } from "react-icons/bs";
+import { getAllUsers } from "../../../api/FirestoreAPI";
+import ProfilePopup from "../ProfilePopup";
+import "./index.scss";
+
+export default function Topbar({ currentUser }) {
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  let navigate = useNavigate();
+  const goToRoute = (route) => {
+    navigate(route);
+  };
+
+  const displayPopup = () => {
+    setPopupVisible(!popupVisible);
+  };
+
+  const openUser = (user) => {
+    navigate("/profile", {
+      state: {
+        id: user.id,
+        email: user.email,
+      },
+    });
+  };
+
+  const handleSearch = () => {
+    if (searchInput !== "") {
+      let searched = users.filter((user) => {
+        return Object.values(user)
+          .join("")
+          .toLowerCase()
+          .includes(searchInput.toLowerCase());
+      });
+
+      setFilteredUsers(searched);
+    } else {
+      setFilteredUsers(users);
+    }
+  };
+
+  useEffect(() => {
+    let debounced = setTimeout(() => {
+      handleSearch();
+    }, 1000);
+
+    return () => clearTimeout(debounced);
+  }, [searchInput]);
+
+  useEffect(() => {
+    getAllUsers(setUsers);
+  }, []);
+  return (
+    <div className="topbar-main">
+      {popupVisible ? (
+        <div className="popup-position">
+          <ProfilePopup />
+        </div>
+      ) : (
+        <></>
+      )}
+
+      <img className="mgmconnect-logo" src={MGMConnectLogo} alt="MGMConnectLogo" />
+      {isSearch ? (
+        <SearchUsers
+          setIsSearch={setIsSearch}
+          setSearchInput={setSearchInput}
+        />
+      ) : (
+        <div className="react-icons">
+          <AiOutlineSearch
+            size={30}
+            className="react-icon"
+            onClick={() => setIsSearch(true)}
+          />
+          <AiOutlineHome
+            size={30}
+            className="react-icon"
+            onClick={() => goToRoute("/home")}
+          />
+          <AiOutlineUserSwitch
+            size={30}
+            className="react-icon"
+            onClick={() => goToRoute("/connections")}
+          />
+          <BsBriefcase size={30} className="react-icon" />
+          <AiOutlineMessage size={30} className="react-icon" />
+          <AiOutlineBell size={30} className="react-icon" />
+        </div>
+      )}
+      <img
+        className="user-logo"
+        src={currentUser?.imageLink}
+        alt="user"
+        onClick={displayPopup}
+      />
+
+      {searchInput.length === 0 ? (
+        <></>
+      ) : (
+        <div className="search-results">
+          {filteredUsers.length === 0 ? (
+            <div className="search-inner">No Results Found..</div>
+          ) : (
+            filteredUsers.map((user) => (
+              <div className="search-inner" onClick={() => openUser(user)}>
+                <img src={user.imageLink} />
+                <p className="name">{user.name}</p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+.topbar-main {
+    width: 100%;
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.87);
+    display: flex;
+    align-items: center;
+  }
+  .mgmconnect-logo {
+    width: 65px;
+    margin-left: 20px;
+  }
+  .react-icons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 55%;
+    margin-left: 30px;
+  }
+  
+  .react-icon {
+    color: #787878;
+    cursor: pointer;
+  }
+  
+  .react-icon:hover {
+    color: black;
+  }
+  
+  .user-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    right: 30px;
+    cursor: pointer;
+  }
+  
+  .popup-position {
+    position: absolute;
+    right: 10px;
+    top: 65px;
+    z-index: 99;
+  }
+  
+  .search-results {
+    position: absolute;
+    left: 100px;
+    top: 60px;
+    width: 240px;
+    height: auto;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #bbbbbb;
+  
+    .search-inner {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 10px;
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+  
+      .name {
+        font-family: system-ui;
+        font-size: 18px;
+      }
+    }
+  
+    .search-inner:hover {
+      background-color: #bbbbbb;
+    }
+  }
+
+So the 9. SearchUsers Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React from "react";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import "./index.scss";
+
+export default function SearchUsers({ setIsSearch, setSearchInput }) {
+  return (
+    <div className="search-users">
+      <input
+        placeholder="Search Users.."
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
+
+      <AiOutlineCloseCircle
+        className="close-icon"
+        size={20}
+        onClick={() => {
+          setIsSearch(false);
+          setSearchInput("");
+        }}
+      />
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+.search-users {
+    width: 40%;
+    margin-left: 15px;
+    display: flex;
+    align-items: center;
+    .close-icon {
+      margin-left: -30px;
+      color: #707070;
+    }
+    input {
+      width: 100%;
+      height: 30px;
+      background-color: whitesmoke;
+      border: 1px solid #bbbbbb;
+      border-radius: 10px;
+      color: #212121;
+      padding-left: 10px;
+      font-size: 14px;
+      outline: none;
+      font-family: Inter;
+    }
+  
+    input:focus {
+      border: 1px solid #707070;
+    }
+  
+    ::placeholder {
+      font-size: 14px;
+      font-family: Inter;
+    }
+  }
+
+
+So the 10. ProfileCard Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useState, useMemo } from "react";
+import { getSingleStatus, getSingleUser } from "../../../api/FirestoreAPI";
+import PostsCard from "../PostsCard";
+import { HiOutlinePencil } from "react-icons/hi";
+import { useLocation } from "react-router-dom";
+import FileUploadModal from "../FileUploadModal";
+import { uploadImage as uploadImageAPI } from "../../../api/ImageUpload";
+import "./index.scss";
+
+export default function ProfileCard({ onEdit, currentUser }) {
+  let location = useLocation();
+  const [allStatuses, setAllStatus] = useState([]);
+  const [currentProfile, setCurrentProfile] = useState({});
+  const [currentImage, setCurrentImage] = useState({});
+  const [progress, setProgress] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const getImage = (event) => {
+    setCurrentImage(event.target.files[0]);
+  };
+  console.log(currentProfile);
+  const uploadImage = () => {
+    uploadImageAPI(
+      currentImage,
+      currentUser.id,
+      setModalOpen,
+      setProgress,
+      setCurrentImage
+    );
+  };
+
+  useMemo(() => {
+    if (location?.state?.id) {
+      getSingleStatus(setAllStatus, location?.state?.id);
+    }
+
+    if (location?.state?.email) {
+      getSingleUser(setCurrentProfile, location?.state?.email);
+    }
+  }, []);
+
+  return (
+    <>
+      <FileUploadModal
+        getImage={getImage}
+        uploadImage={uploadImage}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        currentImage={currentImage}
+        progress={progress}
+      />
+      <div className="profile-card">
+        {currentUser.id === location?.state?.id ? (
+          <div className="edit-btn">
+            <HiOutlinePencil className="edit-icon" onClick={onEdit} />
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className="profile-info">
+          <div>
+            <img
+              className="profile-image"
+              onClick={() => setModalOpen(true)}
+              src={
+                Object.values(currentProfile).length === 0
+                  ? currentUser.imageLink
+                  : currentProfile?.imageLink
+              }
+              alt="profile-image"
+            />
+            <h3 className="userName">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.name
+                : currentProfile?.name}
+            </h3>
+            <p className="heading">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.headline
+                : currentProfile?.headline}
+            </p>
+            {(currentUser.city || currentUser.country) &&
+            (currentProfile?.city || currentProfile?.country) ? (
+              <p className="location">
+                {Object.values(currentProfile).length === 0
+                  ? `${currentUser.city}, ${currentUser.country} `
+                  : `${currentProfile?.city}, ${currentUser.country}`}
+              </p>
+            ) : (
+              <></>
+            )}
+            {currentUser.website || currentProfile?.website ? (
+              <a
+                className="website"
+                target="_blank"
+                href={
+                  Object.values(currentProfile).length === 0
+                    ? `${currentUser.website}`
+                    : currentProfile?.website
+                }
+              >
+                {Object.values(currentProfile).length === 0
+                  ? `${currentUser.website}`
+                  : currentProfile?.website}
+              </a>
+            ) : (
+              <></>
+            )}
+          </div>
+
+          <div className="right-info">
+            <p className="college">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.college
+                : currentProfile?.college}
+            </p>
+            <p className="company">
+              {Object.values(currentProfile).length === 0
+                ? currentUser.company
+                : currentProfile?.company}
+            </p>
+          </div>
+        </div>
+        <p className="about-me">
+          {Object.values(currentProfile).length === 0
+            ? currentUser.aboutMe
+            : currentProfile?.aboutMe}
+        </p>
+
+        {currentUser.skills || currentProfile?.skills ? (
+          <p className="skills">
+            <span className="skill-label">Skills</span>:&nbsp;
+            {Object.values(currentProfile).length === 0
+              ? currentUser.skills
+              : currentProfile?.skills}
+          </p>
+        ) : (
+          <></>
+        )}
+      </div>
+
+      <div className="post-status-main">
+        {allStatuses?.map((posts) => {
+          return (
+            <div key={posts.id}>
+              <PostsCard posts={posts} />
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+code block for index.scss is:
+
+.profile-card {
+    width: auto;
+    height: auto;
+    background-color: whitesmoke;
+    margin: 30px;
+    border-radius: 5px;
+    padding: 20px;
+    position: relative;
+    .profile-info {
+      display: flex;
+      justify-content: space-between;
+      .profile-image {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+        border-radius: 50%;
+        border: 2px solid #cacaca;
+        padding: 5px;
+        cursor: pointer;
+      }
+      .right-info {
+        margin-top: 25px;
+        margin-right: 20px;
+        .college,
+        .company {
+          font-family: system-ui;
+          color: rgba(0, 0, 0, 0.9);
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 30px;
+        }
+  
+        .company {
+          margin-top: -15px;
+        }
+      }
+    }
+  
+    .website {
+      color: #A18965 !important;
+      -webkit-link: #A18965;
+    }
+    .skill-label {
+      font-weight: 600;
+    }
+    .edit-btn {
+      position: absolute;
+      right: 20px;
+  
+      .edit-icon {
+        cursor: pointer;
+        padding: 10px;
+      }
+  
+      .edit-icon:hover {
+        background-color: rgb(197, 197, 197);
+        padding: 10px;
+        border-radius: 50%;
+      }
+    }
+    .userName {
+      font-family: system-ui;
+      color: rgba(0, 0, 0, 0.9);
+      font-weight: 600;
+      font-size: 24px;
+      margin-top: 10px;
+    }
+  
+    .heading {
+      margin-top: -25px;
+      font-family: system-ui;
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.9);
+      width: 320px;
+      line-height: 20px;
+    }
+  }
+
+So the 11. ProfileEdit Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
+import { editProfile } from "../../../api/FirestoreAPI";
+import "./index.scss";
+
+export default function ProfileEdit({ onEdit, currentUser }) {
+  const [editInputs, setEditInputs] = useState(currentUser);
+  const getInput = (event) => {
+    let { name, value } = event.target;
+    let input = { [name]: value };
+    setEditInputs({ ...editInputs, ...input });
+  };
+
+  const updateProfileData = async () => {
+    await editProfile(currentUser?.id, editInputs);
+    await onEdit();
+  };
+
+  return (
+    <div className="profile-card">
+      <div className="edit-btn">
+        <AiOutlineClose className="close-icon" onClick={onEdit} size={25} />
+      </div>
+
+      <div className="profile-edit-inputs">
+        <label>Name</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Name"
+          name="name"
+          value={editInputs.name}
+        />
+        <label>Headline</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Headline"
+          value={editInputs.headline}
+          name="headline"
+        />
+        <label>Country</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Country"
+          name="country"
+          value={editInputs.country}
+        />
+        <label>City</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="City"
+          name="city"
+          value={editInputs.city}
+        />
+        <label>Department</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Department"
+          value={editInputs.department}
+          name="Department"
+        />
+        <label>Year</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="year"
+          name="year"
+          value={editInputs.year}
+        />
+        <label>College</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="College"
+          name="college"
+          value={editInputs.college}
+        />
+        <label>Website</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Website"
+          name="website"
+          value={editInputs.website}
+        />
+        <label>About</label>
+        <textarea
+          placeholder="About Me"
+          className="common-textArea"
+          onChange={getInput}
+          rows={5}
+          name="aboutMe"
+          value={editInputs.aboutMe}
+        />
+        <label>Skills</label>
+        <input
+          onChange={getInput}
+          className="common-input"
+          placeholder="Skill"
+          name="skills"
+          value={editInputs.skills}
+        />
+      </div>
+      <div className="save-container">
+        <button className="save-btn" onClick={updateProfileData}>
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+$mgmkhaki1: #D3BAA1;
+$mgmkhaki2: #C29C7D;
+$mgmkhaki3: #A18965;
+
+.profile-edit-inputs {
+  display: grid;
+  margin-top: 40px;
+  gap: 20px;
+
+  label {
+    font-family: system-ui;
+    margin-bottom: -15px;
+  }
+
+  .edit-input {
+    width: 300px;
+    height: 40px;
+  }
+}
+
+.save-container {
+  display: flex;
+  justify-content: center;
+}
+
+.save-btn {
+  width: 300px;
+  height: 50px;
+  cursor: pointer;
+  background-color: $mgmkhaki2;
+  border-radius: 30px;
+  outline: none;
+  border: none;
+  font-family: system-ui;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.close-icon {
+  cursor: pointer;
+}
+
+So the 12. ProfilePopup Module contains 2 files index.jsx and index.scss 
+
+code block for index.jsx is:
+
+import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { onLogout } from "../../../api/AuthAPI";
+import { getCurrentUser } from "../../../api/FirestoreAPI";
+import Button from "../Button";
+import "./index.scss";
+
+export default function ProfilePopup() {
+  let navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState({});
+  useMemo(() => {
+    getCurrentUser(setCurrentUser);
+  }, []);
+  return (
+    <div className="popup-card">
+      <p className="name">{currentUser?.name}</p>
+      <p className="headline">{currentUser?.headline}</p>
+      <Button
+        title="View Profile"
+        onClick={() =>
+          navigate("/profile", {
+            state: {
+              id: currentUser?.id,
+            },
+          })
+        }
+      />
+      <Button title="Log out" onClick={onLogout} />
+    </div>
+  );
+}
+
+code block for index.scss is:
+
+.popup-card {
+    border: 1px solid #a8a8a8;
+    width: 200px;
+    height: auto;
+    background-color: whitesmoke;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+  
+    flex-direction: column;
+    padding: 20px;
+    .name {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.9);
+      font-weight: 600;
+      text-align: left;
+      margin-top: -7px;
+    }
+  
+    .headline {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.9);
+      margin-top: -15px;
+    }
+    .popup-option {
+      cursor: pointer;
+    }
+  }
+
+
+So using the provided information as a reference , provide me a new web page named "Notice.jsx" using the same method as of other pages
+and assign that web page to the bell icon in the top bar. also tell me what changes should i make in any of my current 
+existing files. Also properly explain me the different block of codes that will be required for the implementation
+of the new web page and how will they align under my existing directories.
+
+
