@@ -100,8 +100,11 @@ export default function Topbar({ currentUser }) {
           />
           <BsBriefcase size={30} className="react-icon" />
           <AiOutlineMessage size={30} className="react-icon" />
-          <AiOutlineBell size={30} className="react-icon" />
-        </div>
+          <AiOutlineBell 
+            size={30}
+            className="react-icon"
+            onClick={() => goToRoute("/notice")}/>
+          </div>
       )}
       <img
         className="user-logo"
