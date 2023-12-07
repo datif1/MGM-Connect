@@ -15,6 +15,7 @@ import {
 import { toast } from "react-toastify";
 
 let postsRef = collection(firestore, "posts");
+let noticeRef = collection(firestore, "notice");
 let userRef = collection(firestore, "users");
 let likeRef = collection(firestore, "likes");
 let commentsRef = collection(firestore, "comments");
@@ -24,6 +25,16 @@ export const postStatus = (object) => {
   addDoc(postsRef, object)
     .then(() => {
       toast.success("Post has been added successfully");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const noticeStatus = (object) => {
+  addDoc(noticeRef, object)
+    .then(() => {
+      toast.success("Notice has been added successfully");
     })
     .catch((err) => {
       console.log(err);
